@@ -3,11 +3,13 @@ extends Node
 ## Centralized Event Bus for decoupled communication
 ## Handles event registration, emission, and subscription
 
-signal event_emitted(event: BaseEvent)
+#const BaseEvent = preload("res://data/events/BaseEvent.gd")
+
+signal event_emitted(event)
 
 # Event subscriptions: {event_type: [callable1, callable2, ...]}
 var _subscriptions: Dictionary = {}
-var _event_history: Array[BaseEvent] = []
+var _event_history: Array = []
 var _max_history_size: int = 1000
 
 # Performance tracking
@@ -51,7 +53,7 @@ func unsubscribe_all_for_object(obj: Object) -> void:
 			_subscriptions.erase(event_type)
 
 ## Emit an event to all subscribers
-func emit_event(event: BaseEvent) -> void:
+func emit_event(event) -> void:
 	_events_emitted += 1
 	
 	# Add to history
@@ -77,12 +79,18 @@ func emit_event(event: BaseEvent) -> void:
 
 ## Emit a simple event with just type and data
 func emit_simple_event(event_type: String, data: Dictionary = {}, source: String = "") -> void:
-	var event = BaseEvent.new(event_type, source, data)
-	emit_event(event)
+	# Create a simple dictionary-based event instead of using BaseEvent class
+	var event_data = {
+		"event_type": event_type,
+		"source": source,
+		"data": data,
+		"timestamp": Time.get_unix_time_from_system()
+	}
+	emit_event(event_data)
 
 ## Get recent events of a specific type
-func get_recent_events(event_type: String, count: int = 10) -> Array[BaseEvent]:
-	var filtered_events: Array[BaseEvent] = []
+func get_recent_events(event_type: String, count: int = 10) -> Array:
+	var filtered_events: Array = []
 	var start_index = max(0, _event_history.size() - count)
 	
 	for i in range(_event_history.size() - 1, start_index - 1, -1):
@@ -94,9 +102,9 @@ func get_recent_events(event_type: String, count: int = 10) -> Array[BaseEvent]:
 	return filtered_events
 
 ## Get all events from the last N seconds
-func get_events_from_last_seconds(seconds: float) -> Array[BaseEvent]:
+func get_events_from_last_seconds(seconds: float) -> Array:
 	var cutoff_time = Time.get_unix_time_from_system() - seconds
-	var recent_events: Array[BaseEvent] = []
+	var recent_events: Array = []
 	
 	for event in _event_history:
 		if event.timestamp >= cutoff_time:

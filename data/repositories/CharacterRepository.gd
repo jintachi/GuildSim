@@ -4,12 +4,91 @@ extends BaseRepository
 ## Repository for Character entities
 ## Handles character data persistence and retrieval
 
+var _is_initializing: bool = false
+
 func _init(save_system: SaveSystem = null, event_bus: EventBus = null):
 	super._init(save_system, event_bus)
 
 ## Get repository name for save/load
 func get_repository_name() -> String:
 	return "characters"
+
+## Initialize default data
+func _initialize_default_data() -> void:
+	_is_initializing = true
+	
+	# Create some default characters for testing
+	var default_characters = [
+		_create_default_character("Hero", Character.CharacterClass.TANK, Character.CharacterJob.HERO, Character.Quality.THREE_STAR),
+		_create_default_character("Bard", Character.CharacterClass.SUPPORT, Character.CharacterJob.BARD, Character.Quality.TWO_STAR),
+		_create_default_character("Rogue", Character.CharacterClass.ATTACKER, Character.CharacterJob.ROGUE, Character.Quality.TWO_STAR),
+		_create_default_character("Healer", Character.CharacterClass.HEALER, Character.CharacterJob.PRIEST, Character.Quality.ONE_STAR)
+	]
+	
+	for character in default_characters:
+		if character.validate():
+			add(character)
+	
+	_is_initializing = false
+
+## Override load to prevent events during data loading
+func load() -> bool:
+	if _save_system:
+		var loaded_data = _save_system.load_data(get_repository_name())
+		if loaded_data != null:
+			_is_initializing = true
+			_data = loaded_data
+			_update_index()
+			_is_initializing = false
+			_on_repository_loaded()
+			return true
+	
+	# If no saved data, initialize with default data
+	_initialize_default_data()
+	return true
+
+## Create a default character
+func _create_default_character(name: String, char_class: Character.CharacterClass,char_job: Character.CharacterJob, quality: Character.Quality) -> Character:
+	var character = Character.new()
+	character.character_name = name
+	character.character_class = char_class
+	character.quality = quality
+	character.rank = Character.Rank.D
+	
+	# Set some basic stats based on class
+	match char_class:
+		Character.CharacterClass.TANK:
+			
+			character.health = 200
+			character.defense = 30
+			character.attack = 15
+			character.speed = 10
+		Character.CharacterClass.SUPPORT:
+			character.health = 120
+			character.defense = 15
+			character.attack = 12
+			character.speed = 15
+			character.intelligence = 15
+		Character.CharacterClass.ATTACKER:
+			character.health = 140
+			character.defense = 20
+			character.attack = 22
+			character.speed = 18
+		Character.CharacterClass.HEALER:
+			character.health = 150
+			character.defense = 18
+			character.attack = 12
+			character.speed = 14
+			character.intelligence = 17
+	
+	# Set some basic substats
+	character.gathering = 5
+	character.hunting = 5
+	character.diplomacy = 5
+	
+	character.character_job = char_job
+
+	return character
 
 ## Get all available characters (not on quest)
 func get_available_characters() -> Array[Character]:
@@ -86,7 +165,7 @@ func get_characters_needing_promotion() -> Array[Character]:
 ## Check if character needs promotion
 func _character_needs_promotion(character: Character) -> bool:
 	# Character needs promotion if they have enough experience for next rank
-	var current_rank_exp = _get_rank_experience_requirement(character.rank)
+	var _current_rank_exp = _get_rank_experience_requirement(character.rank)
 	var next_rank_exp = _get_rank_experience_requirement(_get_next_rank(character.rank))
 	
 	return character.total_experience_gained >= next_rank_exp
@@ -153,8 +232,8 @@ func get_character_statistics() -> Dictionary:
 		stats.by_rank[rank_name] = stats.by_rank.get(rank_name, 0) + 1
 		
 		# Quality count
-		var quality_name = Character.Quality.keys()[character.quality]
-		stats.by_quality[quality_name] = stats.by_quality.get(quality_name, 0) + 1
+		var quality_enum = character.quality
+		stats.by_quality[quality_enum] = stats.by_quality.get(quality_enum, 0) + 1
 		
 		# Level and experience totals
 		total_level += character.level
@@ -168,7 +247,9 @@ func get_character_statistics() -> Dictionary:
 
 ## Override entity added to emit events
 func _on_entity_added(entity: Variant) -> void:
-	if _event_bus and entity is Character:
+	# Only emit recruitment events if this is not during initialization
+	# (i.e., when loading default data or saved data)
+	if _event_bus and entity is Character and not _is_initializing:
 		var event = CharacterEvents.CharacterRecruitedEvent.new(entity, entity.recruitment_cost)
 		_event_bus.emit_event(event)
 

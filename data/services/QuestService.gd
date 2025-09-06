@@ -14,6 +14,7 @@ var _quests_started: int = 0
 var _quests_completed: int = 0
 var _quests_failed: int = 0
 var _total_rewards_given: Dictionary = {}
+var _last_error: String = ""
 
 func _init():
 	super._init("QuestService")
@@ -24,12 +25,21 @@ func initialize_with_repository(quest_repository: QuestRepository, character_ser
 	_character_service = character_service
 	_guild_service = guild_service
 
+## Validate that all dependencies are available
+func _validate_dependencies() -> bool:
+	if not _quest_repository:
+		_last_error = "Quest repository not available"
+		push_error(_service_name + ": " + _last_error)
+		return false
+	_last_error = ""
+	return true
+
 ## Generate a new quest
-func generate_quest(quest_type: Quest.QuestType = Quest.QuestType.GATHERING, quest_rank: Quest.QuestRank = Quest.QuestRank.F) -> Quest:
+func generate_quest(quest_type: Quest.QuestType = Quest.QuestType.GATHERING,quest_dif = Quest.QuestDifficulty.TRIVIAL, quest_rank: Quest.QuestRank = Quest.QuestRank.F) -> Quest:
 	if not _validate_dependencies():
 		return null
 	
-	var quest = _create_quest_from_template(quest_type, quest_rank)
+	var quest = _create_quest_from_template(quest_type,quest_dif, quest_rank)
 	if not quest:
 		return null
 	
@@ -47,13 +57,17 @@ func generate_quest(quest_type: Quest.QuestType = Quest.QuestType.GATHERING, que
 	return null
 
 ## Create quest from template
-func _create_quest_from_template(quest_type: Quest.QuestType, quest_rank: Quest.QuestRank) -> Quest:
+func _create_quest_from_template(quest_type: Quest.QuestType,quest_dif: Quest.QuestDifficulty, quest_rank: Quest.QuestRank) -> Quest:
 	var quest = Quest.new()
 	
 	# Set basic properties
 	quest.quest_type = quest_type
 	quest.quest_rank = quest_rank
-	quest.difficulty = _get_random_difficulty()
+	
+	if quest_dif == null :
+		quest.difficulty = _get_random_difficulty()
+	else : 
+		quest.difficulty = quest_dif
 	
 	# Generate quest details
 	_generate_quest_details(quest)
@@ -85,7 +99,7 @@ func _get_quest_templates() -> Dictionary:
 			"giver": "Local Merchant",
 			"location": "Forest"
 		},
-		"HUNTING_TRAPPING": {
+		"HUNTING": {
 			"name": "Hunt Dangerous Beasts",
 			"description": "Track and eliminate threatening creatures",
 			"giver": "Village Elder",
@@ -103,7 +117,7 @@ func _get_quest_templates() -> Dictionary:
 			"giver": "Merchant Guild",
 			"location": "Trade Route"
 		},
-		"ESCORTING": {
+		"ESCORT": {
 			"name": "Noble Escort",
 			"description": "Safely escort important personages",
 			"giver": "Noble House",
@@ -115,7 +129,7 @@ func _get_quest_templates() -> Dictionary:
 			"giver": "Spymaster",
 			"location": "Enemy Territory"
 		},
-		"ODD_JOBS": {
+		"ODD_JOB": {
 			"name": "Odd Jobs",
 			"description": "Various miscellaneous tasks",
 			"giver": "Local Residents",
@@ -145,14 +159,20 @@ func _generate_quest_requirements(quest: Quest) -> void:
 	quest.required_support = base_requirements.required_support
 	quest.required_attacker = base_requirements.required_attacker
 	
+	# Set job requirements
+	if base_requirements.has("required_jobs"):
+		quest.required_jobs.assign(base_requirements.required_jobs)
+	else:
+		quest.required_jobs = []
+	
 	# Set stat requirements
 	var stat_req_multiplier = rank_multiplier * difficulty_multiplier
-	quest.min_total_health = int(base_requirements.min_health * stat_req_multiplier)
-	quest.min_total_defense = int(base_requirements.min_defense * stat_req_multiplier)
-	quest.min_total_attack = int(base_requirements.min_attack * stat_req_multiplier)
-	quest.min_total_speed = int(base_requirements.min_speed * stat_req_multiplier)
-	quest.min_total_intelligence = int(base_requirements.min_intelligence * stat_req_multiplier)
-	quest.min_total_charisma = int(base_requirements.min_charisma * stat_req_multiplier)
+	quest.min_total_health = int(base_requirements.min_total_health * stat_req_multiplier)
+	quest.min_total_defense = int(base_requirements.min_total_defense * stat_req_multiplier)
+	quest.min_total_attack = int(base_requirements.min_total_attack * stat_req_multiplier)
+	quest.min_total_speed = int(base_requirements.min_total_speed * stat_req_multiplier)
+	quest.min_total_intelligence = int(base_requirements.min_total_intelligence * stat_req_multiplier)
+	quest.min_total_charisma = int(base_requirements.min_total_charisma * stat_req_multiplier)
 	
 	# Set substat requirements
 	quest.min_gathering = int(base_requirements.min_gathering * stat_req_multiplier)
@@ -168,54 +188,125 @@ func _get_base_requirements_for_type(quest_type: Quest.QuestType) -> Dictionary:
 		"GATHERING": {
 			"min_party_size": 1, "max_party_size": 3,
 			"required_tank": false, "required_healer": false, "required_support": false, "required_attacker": false,
-			"min_health": 50, "min_defense": 20, "min_attack": 15, "min_speed": 25, "min_intelligence": 10, "min_charisma": 10,
-			"min_gathering": 15, "min_hunting": 5, "min_diplomacy": 0, "min_stealth": 5, "min_leadership": 0, "min_survival": 10
+			"required_jobs": ["HERBALIST", "SCOUT"],
+			"min_total_health": 40, "min_total_defense": 15, "min_total_attack": 10, "min_total_speed": 20, "min_total_intelligence": 15, "min_total_charisma": 5,
+			"min_gathering": 20, "min_hunting": 5, "min_diplomacy": 0, "min_stealth": 8, "min_leadership": 0, "min_survival": 15
 		},
-		"HUNTING_TRAPPING": {
+		"HUNTING": {
 			"min_party_size": 2, "max_party_size": 4,
 			"required_tank": true, "required_healer": false, "required_support": false, "required_attacker": true,
-			"min_health": 100, "min_defense": 30, "min_attack": 40, "min_speed": 20, "min_intelligence": 15, "min_charisma": 10,
-			"min_gathering": 0, "min_hunting": 20, "min_diplomacy": 0, "min_stealth": 10, "min_leadership": 5, "min_survival": 15
+			"required_jobs": ["HUNTER", "RANGER"],
+			"min_total_health": 120, "min_total_defense": 35, "min_total_attack": 45, "min_total_speed": 25, "min_total_intelligence": 20, "min_total_charisma": 10,
+			"min_gathering": 0, "min_hunting": 25, "min_diplomacy": 0, "min_stealth": 15, "min_leadership": 8, "min_survival": 20
 		},
 		"DIPLOMACY": {
 			"min_party_size": 1, "max_party_size": 3,
 			"required_tank": false, "required_healer": false, "required_support": true, "required_attacker": false,
-			"min_health": 60, "min_defense": 15, "min_attack": 10, "min_speed": 15, "min_intelligence": 25, "min_charisma": 30,
-			"min_gathering": 0, "min_hunting": 0, "min_diplomacy": 20, "min_stealth": 5, "min_leadership": 15, "min_survival": 5
+			"required_jobs": ["DIPLOMAT", "BARD", "MERCHANT"],
+			"min_total_health": 50, "min_total_defense": 10, "min_total_attack": 5, "min_total_speed": 15, "min_total_intelligence": 30, "min_total_charisma": 35,
+			"min_gathering": 0, "min_hunting": 0, "min_diplomacy": 25, "min_stealth": 5, "min_leadership": 20, "min_survival": 5
 		},
 		"CARAVAN_GUARDING": {
 			"min_party_size": 3, "max_party_size": 5,
-			"required_tank": true, "required_healer": false, "required_support": false, "required_attacker": true,
-			"min_health": 120, "min_defense": 40, "min_attack": 35, "min_speed": 25, "min_intelligence": 20, "min_charisma": 15,
-			"min_gathering": 0, "min_hunting": 10, "min_diplomacy": 5, "min_stealth": 0, "min_leadership": 10, "min_survival": 15
+			"required_tank": true, "required_healer": true, "required_support": true, "required_attacker": true,
+			"required_jobs": ["GUARD", "KNIGHT"],
+			"min_total_health": 130, "min_total_defense": 45, "min_total_attack": 40, "min_total_speed": 20, "min_total_intelligence": 15, "min_total_charisma": 20,
+			"min_gathering": 0, "min_hunting": 8, "min_diplomacy": 10, "min_stealth": 0, "min_leadership": 15, "min_survival": 18
 		},
-		"ESCORTING": {
-			"min_party_size": 2, "max_party_size": 4,
+		"ESCORT": {
+			"min_party_size": 2, "max_party_size": 2,
 			"required_tank": true, "required_healer": true, "required_support": false, "required_attacker": false,
-			"min_health": 100, "min_defense": 35, "min_attack": 25, "min_speed": 30, "min_intelligence": 20, "min_charisma": 25,
-			"min_gathering": 0, "min_hunting": 5, "min_diplomacy": 15, "min_stealth": 10, "min_leadership": 20, "min_survival": 10
+			"required_jobs": ["GUARD", "PRIEST"],
+			"min_total_health": 110, "min_total_defense": 40, "min_total_attack": 20, "min_total_speed": 25, "min_total_intelligence": 15, "min_total_charisma": 30,
+			"min_gathering": 0, "min_hunting": 5, "min_diplomacy": 20, "min_stealth": 8, "min_leadership": 25, "min_survival": 12
 		},
 		"STEALTH": {
-			"min_party_size": 1, "max_party_size": 3,
-			"required_tank": false, "required_healer": false, "required_support": false, "required_attacker": false,
-			"min_health": 70, "min_defense": 20, "min_attack": 30, "min_speed": 40, "min_intelligence": 35, "min_charisma": 20,
-			"min_gathering": 0, "min_hunting": 5, "min_diplomacy": 10, "min_stealth": 25, "min_leadership": 5, "min_survival": 15
-		},
-		"ODD_JOBS": {
 			"min_party_size": 1, "max_party_size": 2,
 			"required_tank": false, "required_healer": false, "required_support": false, "required_attacker": false,
-			"min_health": 40, "min_defense": 15, "min_attack": 15, "min_speed": 20, "min_intelligence": 15, "min_charisma": 15,
-			"min_gathering": 5, "min_hunting": 5, "min_diplomacy": 5, "min_stealth": 5, "min_leadership": 5, "min_survival": 5
+			"required_jobs": ["ROGUE", "ASSASSIN", "SCOUT"],
+			"min_total_health": 60, "min_total_defense": 15, "min_total_attack": 35, "min_total_speed": 45, "min_total_intelligence": 40, "min_total_charisma": 15,
+			"min_gathering": 0, "min_hunting": 8, "min_diplomacy": 5, "min_stealth": 30, "min_leadership": 5, "min_survival": 20
+		},
+		"ODD_JOB": {
+			"min_party_size": 1, "max_party_size": 2,
+			"required_tank": false, "required_healer": false, "required_support": false, "required_attacker": false,
+			"required_jobs": [],
+			"min_total_health": 35, "min_total_defense": 12, "min_total_attack": 12, "min_total_speed": 18, "min_total_intelligence": 18, "min_total_charisma": 18,
+			"min_gathering": 8, "min_hunting": 8, "min_diplomacy": 8, "min_stealth": 8, "min_leadership": 8, "min_survival": 8
 		},
 		"EMERGENCY": {
-			"min_party_size": 2, "max_party_size": 5,
-			"required_tank": true, "required_healer": true, "required_support": false, "required_attacker": true,
-			"min_health": 150, "min_defense": 50, "min_attack": 50, "min_speed": 35, "min_intelligence": 30, "min_charisma": 25,
-			"min_gathering": 0, "min_hunting": 15, "min_diplomacy": 10, "min_stealth": 10, "min_leadership": 20, "min_survival": 20
+			"min_party_size": 4, "max_party_size": 5,
+			"required_tank": true, "required_healer": true, "required_support": true, "required_attacker": true,
+			"required_jobs": ["KNIGHT", "PRIEST"],
+			"min_total_health": 160, "min_total_defense": 55, "min_total_attack": 55, "min_total_speed": 30, "min_total_intelligence": 25, "min_total_charisma": 30,
+			"min_gathering": 0, "min_hunting": 12, "min_diplomacy": 15, "min_stealth": 5, "min_leadership": 25, "min_survival": 25
+		},
+		"EXPLORATION": {
+			"min_party_size": 1, "max_party_size": 3,
+			"required_tank": false, "required_healer": false, "required_support": false, "required_attacker": false,
+			"required_jobs": ["SCOUT", "RANGER", "SCHOLAR"],
+			"min_total_health": 60, "min_total_defense": 20, "min_total_attack": 15, "min_total_speed": 30, "min_total_intelligence": 25, "min_total_charisma": 10,
+			"min_gathering": 12, "min_hunting": 10, "min_diplomacy": 5, "min_stealth": 15, "min_leadership": 8, "min_survival": 20
+		},
+		"ASSASSINATION": {
+			"min_party_size": 1, "max_party_size": 1,
+			"required_tank": false, "required_healer": false, "required_support": false, "required_attacker": true,
+			"required_jobs": ["ASSASSIN", "ROGUE"],
+			"min_total_health": 45, "min_total_defense": 15, "min_total_attack": 40, "min_total_speed": 50, "min_total_intelligence": 35, "min_total_charisma": 20,
+			"min_gathering": 0, "min_hunting": 5, "min_diplomacy": 0, "min_stealth": 35, "min_leadership": 0, "min_survival": 15
+		},
+		"RECONNAISSANCE": {
+			"min_party_size": 1, "max_party_size": 2,
+			"required_tank": false, "required_healer": false, "required_support": false, "required_attacker": false,
+			"required_jobs": ["SCOUT", "RANGER"],
+			"min_total_health": 50, "min_total_defense": 15, "min_total_attack": 10, "min_total_speed": 35, "min_total_intelligence": 30, "min_total_charisma": 8,
+			"min_gathering": 5, "min_hunting": 12, "min_diplomacy": 0, "min_stealth": 25, "min_leadership": 5, "min_survival": 20
+		},
+		"INVESTIGATION": {
+			"min_party_size": 1, "max_party_size": 1,
+			"required_tank": false, "required_healer": false, "required_support": true, "required_attacker": false,
+			"required_jobs": ["SCHOLAR", "DETECTIVE"],
+			"min_total_health": 40, "min_total_defense": 10, "min_total_attack": 8, "min_total_speed": 20, "min_total_intelligence": 40, "min_total_charisma": 25,
+			"min_gathering": 0, "min_hunting": 0, "min_diplomacy": 20, "min_stealth": 15, "min_leadership": 10, "min_survival": 8
+		},
+		"RESCUE": {
+			"min_party_size": 2, "max_party_size": 3,
+			"required_tank": false, "required_healer": true, "required_support": true, "required_attacker": false,
+			"required_jobs": ["PRIEST", "KNIGHT"],
+			"min_total_health": 100, "min_total_defense": 30, "min_total_attack": 20, "min_total_speed": 25, "min_total_intelligence": 20, "min_total_charisma": 25,
+			"min_gathering": 0, "min_hunting": 8, "min_diplomacy": 15, "min_stealth": 10, "min_leadership": 20, "min_survival": 18
+		},
+		"DELIVERY": {
+			"min_party_size": 1, "max_party_size": 4,
+			"required_tank": false, "required_healer": false, "required_support": false, "required_attacker": false,
+			"required_jobs": ["MERCHANT", "COURIER"],
+			"min_total_health": 45, "min_total_defense": 18, "min_total_attack": 12, "min_total_speed": 25, "min_total_intelligence": 15, "min_total_charisma": 20,
+			"min_gathering": 0, "min_hunting": 0, "min_diplomacy": 15, "min_stealth": 5, "min_leadership": 10, "min_survival": 12
+		},
+		"UNIQUE_MONSTER_HUNT": {
+			"min_party_size": 2, "max_party_size": 2,
+			"required_tank": false, "required_healer": false, "required_support": false, "required_attacker": true,
+			"required_jobs": ["HUNTER", "RANGER"],
+			"min_total_health": 100, "min_total_defense": 30, "min_total_attack": 50, "min_total_speed": 30, "min_total_intelligence": 20, "min_total_charisma": 15,
+			"min_gathering": 0, "min_hunting": 30, "min_diplomacy": 0, "min_stealth": 12, "min_leadership": 10, "min_survival": 25
+		},
+		"RAID": {
+			"min_party_size": 4, "max_party_size": 5,
+			"required_tank": true, "required_healer": true, "required_support": true, "required_attacker": true,
+			"required_jobs": ["KNIGHT", "PRIEST"],
+			"min_total_health": 160, "min_total_defense": 55, "min_total_attack": 55, "min_total_speed": 30, "min_total_intelligence": 25, "min_total_charisma": 30,
+			"min_gathering": 0, "min_hunting": 12, "min_diplomacy": 15, "min_stealth": 5, "min_leadership": 25, "min_survival": 25
+		},
+		"APEX_PREDATOR_HUNT": {
+			"min_party_size": 4, "max_party_size": 4,
+			"required_tank": true, "required_healer": true, "required_support": true, "required_attacker": true,
+			"required_jobs": ["HUNTER", "RANGER", "KNIGHT"],
+			"min_total_health": 170, "min_total_defense": 60, "min_total_attack": 60, "min_total_speed": 25, "min_total_intelligence": 30, "min_total_charisma": 25,
+			"min_gathering": 0, "min_hunting": 35, "min_diplomacy": 10, "min_stealth": 8, "min_leadership": 30, "min_survival": 30
 		}
 	}
 	
-	return requirements.get(Quest.QuestType.keys()[quest_type], requirements["ODD_JOBS"])
+	return requirements.get(Quest.QuestType.keys()[quest_type], requirements["ODD_JOB"])
 
 ## Generate quest rewards
 func _generate_quest_rewards(quest: Quest) -> void:
@@ -253,28 +344,46 @@ func _get_base_rewards_for_rank(quest_rank: Quest.QuestRank) -> Dictionary:
 
 ## Generate material rewards
 func _generate_material_rewards(quest_type: Quest.QuestType, quest_rank: Quest.QuestRank) -> Dictionary:
-	var materials = {}
+	var materials: Dictionary = {}
 	var rank_multiplier = Quest.QuestRank.keys().find(Quest.QuestRank.keys()[quest_rank]) + 1
 	
 	match quest_type:
 		Quest.QuestType.GATHERING:
 			materials["herbs"] = randi_range(2, 5) * rank_multiplier
 			materials["wood"] = randi_range(1, 3) * rank_multiplier
-		Quest.QuestType.HUNTING_TRAPPING:
+		Quest.QuestType.HUNTING:
 			materials["monster_parts"] = randi_range(1, 3) * rank_multiplier
 			materials["leather"] = randi_range(1, 2) * rank_multiplier
 		Quest.QuestType.DIPLOMACY:
 			materials["trade_documents"] = 1
 		Quest.QuestType.CARAVAN_GUARDING:
 			materials["gold"] = randi_range(10, 25) * rank_multiplier
-		Quest.QuestType.ESCORTING:
+		Quest.QuestType.ESCORT:
 			materials["noble_favor"] = 1
 		Quest.QuestType.STEALTH:
 			materials["intelligence"] = 1
-		Quest.QuestType.ODD_JOBS:
+		Quest.QuestType.ODD_JOB:
 			materials["misc_items"] = randi_range(1, 3)
 		Quest.QuestType.EMERGENCY:
 			materials["emergency_supplies"] = randi_range(2, 4) * rank_multiplier
+		Quest.QuestType.EXPLORATION:
+			materials["exploration_supplies"] = randi_range(1, 3) * rank_multiplier
+		Quest.QuestType.ASSASSINATION:
+			materials["assassination_kit"] = 1
+		Quest.QuestType.RECONNAISSANCE:
+			materials["reconnaissance_supplies"] = randi_range(1, 3) * rank_multiplier
+		Quest.QuestType.INVESTIGATION:
+			materials["investigation_supplies"] = randi_range(1, 3) * rank_multiplier
+		Quest.QuestType.RESCUE:
+			materials["rescue_supplies"] = randi_range(1, 3) * rank_multiplier
+		Quest.QuestType.DELIVERY:
+			materials["delivery_supplies"] = randi_range(1, 3) * rank_multiplier
+		Quest.QuestType.UNIQUE_MONSTER_HUNT:
+			materials["unique_monster_parts"] = randi_range(1, 3) * rank_multiplier
+		Quest.QuestType.RAID:
+			materials["raid_supplies"] = randi_range(1, 3) * rank_multiplier
+		Quest.QuestType.APEX_PREDATOR_HUNT:
+			materials["apex_predator_parts"] = randi_range(1, 3) * rank_multiplier
 	
 	return materials
 
@@ -317,6 +426,53 @@ func _get_random_difficulty() -> Quest.QuestDifficulty:
 			return difficulties[i]
 	
 	return Quest.QuestDifficulty.NORMAL
+
+## Assign quest to characters (alias for start_quest)
+## Check if a quest can be assigned to characters
+func can_assign_quest(quest: Quest, characters: Array[Character]) -> bool:
+	if not _validate_dependencies():
+		return false
+	
+	if not quest or characters.is_empty():
+		return false
+	
+	# Check if quest is available
+	if quest.status != Quest.QuestStatus.NOT_STARTED:
+		return false
+	
+	# Check party size requirements
+	if characters.size() < quest.min_party_size or characters.size() > quest.max_party_size:
+		return false
+	
+	# Check if all characters are available
+	for character in characters:
+		if not character.is_available():
+			return false
+	
+	# Validate quest party requirements
+	return _validate_quest_party(quest, characters)
+
+func assign_quest(quest_id: String, character_ids: Array[String]) -> bool:
+	if not _validate_dependencies():
+		return false
+	
+	# Get the quest
+	var quest = _quest_repository.get_by_id(quest_id)
+	if not quest:
+		return false
+	
+	# Get the character objects
+	var party: Array[Character] = []
+	for char_id in character_ids:
+		var character = _character_service._character_repository.get_by_id(char_id)
+		if character:
+			party.append(character)
+	
+	if party.is_empty():
+		return false
+	
+	# Use start_quest to handle the assignment
+	return start_quest(quest, party)
 
 ## Start a quest with a party
 func start_quest(quest: Quest, party: Array[Character]) -> bool:
@@ -363,7 +519,7 @@ func _validate_quest_party(quest: Quest, party: Array[Character]) -> bool:
 	
 	# Check class requirements
 	var class_requirements = quest.get_class_requirements()
-	var party_classes = {}
+	var party_classes: Dictionary = {}
 	
 	for character in party:
 		var char_class_name = Character.CharacterClass.keys()[character.character_class].to_lower()
@@ -483,6 +639,38 @@ func complete_quest(quest: Quest, party: Array[Character]) -> bool:
 	log_activity("Completed quest: " + quest.quest_name + " (Success: " + str(success) + ", Rate: " + str(success_rate) + ")")
 	return success
 
+## Fail a quest
+func fail_quest(quest: Quest, party: Array[Character]) -> bool:
+	if not _validate_dependencies():
+		return false
+	
+	# Set quest status to failed
+	quest.status = Quest.QuestStatus.FAILED
+	quest.completion_time = Time.get_unix_time_from_system()
+	
+	# Process failure results
+	_process_quest_failure(quest, party)
+	
+	# Update character statuses
+	for character in party:
+		character.status = Character.CharacterStatus.AVAILABLE
+		_character_service._character_repository.update(character)
+	
+	# Update repository
+	_quest_repository.update(quest)
+	
+	# Update statistics
+	_quests_failed += 1
+	
+	# Emit failure event
+	var failure_reason = "Quest failed due to insufficient party capabilities"
+	var penalties = quest.get_failure_penalties()
+	var event = QuestEvents.QuestFailedEvent.new(quest, party, failure_reason, penalties)
+	emit_event(event)
+	
+	log_activity("Failed quest: " + quest.quest_name)
+	return true
+
 ## Calculate quest success rate
 func _calculate_quest_success_rate(quest: Quest, party: Array[Character]) -> float:
 	var base_success_rate = 0.8  # 80% base success rate
@@ -509,7 +697,7 @@ func _calculate_quest_success_rate(quest: Quest, party: Array[Character]) -> flo
 	
 	# Calculate class requirement bonus
 	var class_requirements = quest.get_class_requirements()
-	var party_classes = {}
+	var party_classes: Dictionary = {}
 	
 	for character in party:
 		var char_class_name = Character.CharacterClass.keys()[character.character_class].to_lower()
@@ -540,7 +728,7 @@ func _process_quest_success(quest: Quest, party: Array[Character]) -> void:
 			_total_rewards_given[reward_type] = _total_rewards_given.get(reward_type, 0) + rewards[reward_type]
 	
 	# Give experience to characters
-	var experience_per_character = quest.experience_reward / party.size()
+	var experience_per_character = int(quest.experience_reward / float(party.size()))
 	for character in party:
 		_character_service.add_experience(character, experience_per_character)
 	
@@ -568,7 +756,7 @@ func _check_for_injuries(quest: Quest, party: Array[Character], is_failure: bool
 			_inflict_injury(character, quest.difficulty)
 
 ## Inflict injury on character
-func _inflict_injury(character: Character, difficulty: Quest.QuestDifficulty) -> void:
+func _inflict_injury(character: Character, _difficulty: Quest.QuestDifficulty) -> void:
 	var injury_types = Character.InjuryType.values()
 	var injury_type = injury_types[randi() % injury_types.size()]
 	
@@ -613,3 +801,17 @@ func get_statistics() -> Dictionary:
 	var quest_stats = get_quest_statistics()
 	base_stats.merge(quest_stats)
 	return base_stats
+
+## Check if quest generation is possible
+func can_generate_quest() -> bool:
+	return _validate_dependencies()
+
+## Get the cost of generating a quest
+func get_generation_cost() -> Dictionary:
+	# For now, quest generation is free
+	# In the future, this could check guild resources or other costs
+	return {}
+
+## Get the last error message
+func get_last_error() -> String:
+	return _last_error if "_last_error" in self else ""

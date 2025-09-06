@@ -1,0 +1,197 @@
+[gd_scene load_steps=2 format=3 uid="uid://0h1oghhvd46n"]
+
+[ext_resource type="Script" uid="uid://c8nesi7lpw7wb" path="res://ui/components/GuildUI.gd" id="1_0x1y2"]
+
+[node name="GuildUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0x1y2")
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HeaderPanel" type="PanelContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="HeaderContent" type="HBoxContainer" parent="MainContainer/HeaderPanel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/HeaderPanel/HeaderContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "Guild Management"
+
+[node name="GuildNameLabel" type="Label" parent="MainContainer/HeaderPanel/HeaderContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Guild Name: N/A"
+
+[node name="ContentContainer" type="HSplitContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftPanel" type="VBoxContainer" parent="MainContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GuildOverviewPanel" type="PanelContainer" parent="MainContainer/ContentContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="GuildOverviewContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/GuildOverviewPanel"]
+layout_mode = 2
+
+[node name="OverviewLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/GuildOverviewPanel/GuildOverviewContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Guild Overview"
+
+[node name="GuildLevelLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/GuildOverviewPanel/GuildOverviewContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Level: N/A"
+
+[node name="GuildReputationLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/GuildOverviewPanel/GuildOverviewContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Reputation: N/A"
+
+[node name="GuildEfficiencyLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/GuildOverviewPanel/GuildOverviewContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Efficiency: N/A"
+
+[node name="ResourcePanel" type="PanelContainer" parent="MainContainer/ContentContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="ResourceContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/ResourcePanel"]
+layout_mode = 2
+
+[node name="ResourceLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ResourcePanel/ResourceContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Resources"
+
+[node name="GoldLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ResourcePanel/ResourceContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "Gold: 0"
+
+[node name="InfluenceLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ResourcePanel/ResourceContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "Influence: 0"
+
+[node name="FoodLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ResourcePanel/ResourceContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "Food: 0"
+
+[node name="BuildingMaterialsLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/ResourcePanel/ResourceContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.4, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "Building Materials: 0"
+
+[node name="RightPanel" type="VBoxContainer" parent="MainContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RoomManagementPanel" type="PanelContainer" parent="MainContainer/ContentContainer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RoomManagementContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel"]
+layout_mode = 2
+
+[node name="RoomManagementLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Room Management"
+
+[node name="RoomListsContainer" type="HSplitContainer" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="UnlockedRoomsContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer/RoomListsContainer"]
+layout_mode = 2
+
+[node name="UnlockedRoomsLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer/RoomListsContainer/UnlockedRoomsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Unlocked Rooms"
+
+[node name="UnlockedRoomsList" type="ItemList" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer/RoomListsContainer/UnlockedRoomsContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AvailableRoomsContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer/RoomListsContainer"]
+layout_mode = 2
+
+[node name="AvailableRoomsLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer/RoomListsContainer/AvailableRoomsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Available Rooms"
+
+[node name="AvailableRoomsList" type="ItemList" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer/RoomListsContainer/AvailableRoomsContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RoomCostLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "Cost: N/A"
+
+[node name="UnlockRoomButton" type="Button" parent="MainContainer/ContentContainer/RightPanel/RoomManagementPanel/RoomManagementContainer"]
+layout_mode = 2
+disabled = true
+text = "Unlock Room"
+
+[node name="UpgradePanel" type="PanelContainer" parent="MainContainer/ContentContainer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="UpgradeContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/UpgradePanel"]
+layout_mode = 2
+
+[node name="UpgradeLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/UpgradePanel/UpgradeContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Guild Upgrades"
+
+[node name="AvailableUpgradesList" type="ItemList" parent="MainContainer/ContentContainer/RightPanel/UpgradePanel/UpgradeContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="UpgradeCostLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/UpgradePanel/UpgradeContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "Cost: N/A"
+
+[node name="PurchaseUpgradeButton" type="Button" parent="MainContainer/ContentContainer/RightPanel/UpgradePanel/UpgradeContainer"]
+layout_mode = 2
+disabled = true
+text = "Purchase Upgrade"

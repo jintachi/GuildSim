@@ -1,0 +1,209 @@
+[gd_scene load_steps=2 format=3 uid="uid://wfj6b11wkwx2"]
+
+[ext_resource type="Script" uid="uid://bvhhuef0d1j45" path="res://ui/components/QuestUI.gd" id="1_0x9y8"]
+
+[node name="QuestUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0x9y8")
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HeaderPanel" type="PanelContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="HeaderContent" type="HBoxContainer" parent="MainContainer/HeaderPanel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/HeaderPanel/HeaderContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "Quest Management"
+
+[node name="StatsLabel" type="Label" parent="MainContainer/HeaderPanel/HeaderContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Active Quests: 0 | Completed: 0 | Available: 0"
+
+[node name="ContentContainer" type="HSplitContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftPanel" type="VBoxContainer" parent="MainContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuestListPanel" type="PanelContainer" parent="MainContainer/ContentContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="QuestListContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/QuestListPanel"]
+layout_mode = 2
+
+[node name="QuestListLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/QuestListPanel/QuestListContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Quest Board"
+
+[node name="QuestList" type="ItemList" parent="MainContainer/ContentContainer/LeftPanel/QuestListPanel/QuestListContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+select_mode = 1
+
+[node name="QuestGenerationPanel" type="PanelContainer" parent="MainContainer/ContentContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="QuestGenerationContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel"]
+layout_mode = 2
+
+[node name="GenerationLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Generate New Quest"
+
+[node name="GenerationForm" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer"]
+layout_mode = 2
+
+[node name="QuestTypeContainer" type="HBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm"]
+layout_mode = 2
+
+[node name="QuestTypeLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm/QuestTypeContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Type:"
+
+[node name="QuestTypeSelection" type="OptionButton" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm/QuestTypeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuestDifficultyContainer" type="HBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm"]
+layout_mode = 2
+
+[node name="QuestDifficultyLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm/QuestDifficultyContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Difficulty:"
+
+[node name="QuestDifficultySelection" type="OptionButton" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm/QuestDifficultyContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuestRankContainer" type="HBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm"]
+layout_mode = 2
+
+[node name="QuestRankLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm/QuestRankContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Rank:"
+
+[node name="QuestRankSelection" type="OptionButton" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm/QuestRankContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GenerationCostLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "Cost: 50 Gold, 5 Influence"
+
+[node name="GenerateQuestButton" type="Button" parent="MainContainer/ContentContainer/LeftPanel/QuestGenerationPanel/QuestGenerationContainer/GenerationForm"]
+layout_mode = 2
+text = "Generate Quest"
+
+[node name="RightPanel" type="VBoxContainer" parent="MainContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuestDetailsPanel" type="PanelContainer" parent="MainContainer/ContentContainer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="QuestDetailsContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel"]
+layout_mode = 2
+
+[node name="QuestDetailsLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel/QuestDetailsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Quest Details"
+
+[node name="QuestDetails" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel/QuestDetailsContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="QuestNameLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel/QuestDetailsContainer/QuestDetails"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "Select a quest to view details"
+
+[node name="QuestTypeLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel/QuestDetailsContainer/QuestDetails"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Type: N/A"
+
+[node name="QuestDifficultyLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel/QuestDetailsContainer/QuestDetails"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Difficulty: N/A"
+
+[node name="QuestRewardsContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel/QuestDetailsContainer/QuestDetails"]
+layout_mode = 2
+
+[node name="RewardsLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel/QuestDetailsContainer/QuestDetails/QuestRewardsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Rewards:"
+
+[node name="QuestRequirementsContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel/QuestDetailsContainer/QuestDetails"]
+layout_mode = 2
+
+[node name="RequirementsLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/QuestDetailsPanel/QuestDetailsContainer/QuestDetails/QuestRequirementsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Requirements:"
+
+[node name="QuestAssignmentPanel" type="PanelContainer" parent="MainContainer/ContentContainer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="QuestAssignmentContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/QuestAssignmentPanel"]
+layout_mode = 2
+
+[node name="AssignmentLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/QuestAssignmentPanel/QuestAssignmentContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Assign Quest"
+
+[node name="CharacterSelectionList" type="ItemList" parent="MainContainer/ContentContainer/RightPanel/QuestAssignmentPanel/QuestAssignmentContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+select_mode = 2
+
+[node name="AssignmentErrorLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/QuestAssignmentPanel/QuestAssignmentContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+
+[node name="AssignQuestButton" type="Button" parent="MainContainer/ContentContainer/RightPanel/QuestAssignmentPanel/QuestAssignmentContainer"]
+layout_mode = 2
+disabled = true
+text = "Assign Quest"

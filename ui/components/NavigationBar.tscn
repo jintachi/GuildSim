@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3 uid="uid://ds3tokljvmaoq"]
+
+[ext_resource type="Script" uid="uid://cu1dtncll5ry" path="res://ui/components/NavigationBar.gd" id="1_0x2y3"]
+
+[node name="NavigationBar" type="Control"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("1_0x2y3")
+
+[node name="VBox" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 31.0
+grow_horizontal = 2
+
+[node name="CharactersButton" type="Button" parent="VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Characters"
+
+[node name="QuestsButton" type="Button" parent="VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Quests"
+
+[node name="GuildButton" type="Button" parent="VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Guild"
+
+[node name="MapButton" type="Button" parent="VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Map"
+
+[node name="SettingsButton" type="Button" parent="VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Settings"

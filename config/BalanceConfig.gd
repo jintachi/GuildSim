@@ -64,12 +64,12 @@ extends Resource
 
 @export var quest_type_reward_bonuses: Dictionary = {
 	"GATHERING": {"gold": 1.0, "influence": 0.8, "experience": 1.2},
-	"HUNTING_TRAPPING": {"gold": 1.2, "influence": 1.0, "experience": 1.0},
+	"HUNTING": {"gold": 1.2, "influence": 1.0, "experience": 1.0},
 	"DIPLOMACY": {"gold": 0.8, "influence": 1.5, "experience": 1.1},
 	"CARAVAN_GUARDING": {"gold": 1.1, "influence": 1.0, "experience": 0.9},
-	"ESCORTING": {"gold": 1.0, "influence": 1.2, "experience": 1.0},
+	"ESCORT": {"gold": 1.0, "influence": 1.2, "experience": 1.0},
 	"STEALTH": {"gold": 1.3, "influence": 0.7, "experience": 1.3},
-	"ODD_JOBS": {"gold": 0.9, "influence": 0.9, "experience": 1.0},
+	"ODD_JOB": {"gold": 0.9, "influence": 0.9, "experience": 1.0},
 	"EMERGENCY": {"gold": 2.0, "influence": 2.0, "experience": 1.5}
 }
 
@@ -234,7 +234,9 @@ extends Resource
 
 ## Get recruitment cost for character quality
 func get_recruitment_cost(quality: Character.Quality) -> int:
-	var quality_name = Character.Quality.keys()[quality]
+	if quality < 0 or quality >= Character.Quality.keys().size():
+		return 100
+	var quality_name = Character.Quality.keys()[(quality - 1)]
 	return character_recruitment_costs.get(quality_name, 100)
 
 ## Get experience requirement for rank
@@ -258,7 +260,7 @@ func get_training_cost(stat_name: String) -> Dictionary:
 
 ## Get training success rate for quality
 func get_training_success_rate(quality: Character.Quality) -> float:
-	var quality_name = Character.Quality.keys()[quality]
+	var quality_name = Character.Quality.keys()[(quality - 1)] # -1 because the enum starts at 1
 	return training_success_rates.get(quality_name, 0.6)
 
 ## Get injury chance for difficulty

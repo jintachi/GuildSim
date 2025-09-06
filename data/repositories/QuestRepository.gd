@@ -11,6 +11,73 @@ func _init(save_system: SaveSystem = null, event_bus: EventBus = null):
 func get_repository_name() -> String:
 	return "quests"
 
+## Initialize default data
+func _initialize_default_data() -> void:
+	# Create some default quests for testing
+	var default_quests = [
+		_create_default_quest("Gather Herbs", Quest.QuestType.GATHERING, Quest.QuestRank.D),
+		_create_default_quest("Hunt Wolves", Quest.QuestType.HUNTING, Quest.QuestRank.C),
+		_create_default_quest("Diplomatic Mission", Quest.QuestType.DIPLOMACY, Quest.QuestRank.B),
+		_create_default_quest("Explore Ruins", Quest.QuestType.EXPLORATION, Quest.QuestRank.A)
+	]
+	
+	for quest in default_quests:
+		if quest.validate():
+			add(quest)
+
+## Create a default quest
+func _create_default_quest(name: String, quest_type: Quest.QuestType, rank: Quest.QuestRank) -> Quest:
+	var quest = Quest.new()
+	quest.quest_name = name
+	quest.quest_type = quest_type
+	quest.quest_rank = rank
+	quest.difficulty = Quest.QuestDifficulty.NORMAL
+	quest.description = "A " + Quest.QuestType.keys()[quest_type].to_lower() + " quest of " + Quest.QuestRank.keys()[rank] + " rank"
+	quest.duration = 300.0  # 5 minutes
+	
+	# Set requirements based on type and rank
+	quest.min_party_size = 1
+	quest.max_party_size = 3
+	
+	match quest_type:
+		Quest.QuestType.GATHERING:
+			quest.min_gathering = 10
+			quest.min_survival = 5
+		Quest.QuestType.HUNTING:
+			quest.min_hunting = 15
+			quest.min_survival = 10
+		Quest.QuestType.DIPLOMACY:
+			quest.min_diplomacy = 20
+			quest.min_total_charisma = 15
+		Quest.QuestType.EXPLORATION:
+			quest.min_survival = 15
+			quest.min_total_intelligence = 10
+	
+	# Set rewards based on rank
+	match rank:
+		Quest.QuestRank.D:
+			quest.gold_reward = 100
+			quest.influence_reward = 25
+			quest.experience_reward = 50
+		Quest.QuestRank.C:
+			quest.gold_reward = 200
+			quest.influence_reward = 50
+			quest.experience_reward = 100
+		Quest.QuestRank.B:
+			quest.gold_reward = 400
+			quest.influence_reward = 100
+			quest.experience_reward = 200
+		Quest.QuestRank.A:
+			quest.gold_reward = 800
+			quest.influence_reward = 200
+			quest.experience_reward = 400
+	
+	# Set risk
+	quest.injury_chance = 0.1
+	quest.failure_penalty_gold = quest.gold_reward * 0.1
+	
+	return quest
+
 ## Get all available quests (not started)
 func get_available_quests() -> Array[Quest]:
 	var available: Array[Quest] = []
@@ -132,7 +199,7 @@ func _can_party_complete_quest(quest: Quest, party: Array[Character]) -> bool:
 	
 	# Check class requirements
 	var class_requirements = quest.get_class_requirements()
-	var party_classes = {}
+	var party_classes: Dictionary = {}
 	
 	for character in party:
 		var char_class_name = Character.CharacterClass.keys()[character.character_class].to_lower()

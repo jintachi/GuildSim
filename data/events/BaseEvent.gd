@@ -9,11 +9,11 @@ extends RefCounted
 @export var source: String
 @export var data: Dictionary
 
-func _init(event_type: String, source: String = "", data: Dictionary = {}):
-	self.event_type = event_type
-	self.source = source
-	self.data = data
-	self.timestamp = Time.get_unix_time_from_system()
+func _init(p_event_type: String, p_source: String = "", p_data: Dictionary = {}):
+	event_type = p_event_type
+	source = p_source
+	data = p_data
+	timestamp = Time.get_unix_time_from_system()
 
 ## Get event age in seconds
 func get_age() -> float:
@@ -26,7 +26,10 @@ func is_older_than(seconds: float) -> bool:
 ## Get formatted timestamp string
 func get_timestamp_string() -> String:
 	var time_dict = Time.get_datetime_dict_from_unix_time(timestamp)
-	return "%02d:%02d:%02d" % [time_dict.hour, time_dict.minute, time_dict.second]
+	var hour = int(round(time_dict.hour))
+	var minute = int(round(time_dict.minute))
+	var second = int(round(time_dict.second))
+	return "%02d:%02d:%02d" % [hour, minute, second]
 
 ## Convert event to dictionary for serialization
 func to_dict() -> Dictionary:

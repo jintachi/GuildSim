@@ -13,6 +13,7 @@ var _resources_spent: Dictionary = {}
 var _rooms_unlocked: int = 0
 var _features_unlocked: int = 0
 var _upgrades_purchased: int = 0
+var _last_error: String = ""
 
 func _init():
 	super._init("GuildService")
@@ -27,6 +28,19 @@ func initialize_with_repository(guild_repository: GuildRepository) -> void:
 		_guild = guilds[0]
 	else:
 		_create_new_guild()
+
+## Validate that all dependencies are available
+func _validate_dependencies() -> bool:
+	if not _guild_repository:
+		_last_error = "Guild repository not available"
+		push_error(_service_name + ": " + _last_error)
+		return false
+	if not _guild:
+		_last_error = "Guild not available"
+		push_error(_service_name + ": " + _last_error)
+		return false
+	_last_error = ""
+	return true
 
 ## Create a new guild
 func _create_new_guild() -> void:
@@ -63,7 +77,7 @@ func add_resources(resources: Dictionary) -> bool:
 	if not _validate_dependencies() or not _guild:
 		return false
 	
-	var resources_added = {}
+	var resources_added: Dictionary = {}
 	
 	for resource_type in resources:
 		var amount = resources[resource_type]
@@ -110,7 +124,7 @@ func spend_resources(resources: Dictionary) -> bool:
 		})
 		return false
 	
-	var resources_spent = {}
+	var resources_spent: Dictionary = {}
 	
 	for resource_type in resources:
 		var amount = resources[resource_type]
@@ -268,7 +282,7 @@ func purchase_upgrade(upgrade_type: String) -> bool:
 
 ## Calculate upgrade benefits
 func _calculate_upgrade_benefits(upgrade_type: String, level: int) -> Dictionary:
-	var benefits = {}
+	var benefits: Dictionary = {}
 	
 	match upgrade_type:
 		"roster_size":
@@ -406,3 +420,59 @@ func get_statistics() -> Dictionary:
 	var guild_stats = get_guild_statistics()
 	base_stats.merge(guild_stats)
 	return base_stats
+
+## Get room costs for all available rooms
+func get_room_costs() -> Dictionary:
+	if not _validate_dependencies():
+		return {}
+	
+	var room_costs: Dictionary = {}
+	# For now, return costs for common rooms
+	# In the future, this could be expanded with a list of available rooms
+	var common_rooms = ["training_room", "library", "workshop", "armory", "healers_guild", "merchants_guild", "blacksmiths_guild"]
+	for room_name in common_rooms:
+		room_costs[room_name] = _balance_config.get_room_unlock_cost(room_name)
+	return room_costs
+
+## Check if room unlocking is possible
+func can_unlock_room() -> bool:
+	return _validate_dependencies() and _guild != null
+
+## Get upgrade costs for all available upgrades
+func get_upgrade_costs() -> Dictionary:
+	if not _validate_dependencies():
+		return {}
+	
+	var upgrade_costs: Dictionary = {}
+	# For now, return costs for common upgrades
+	# In the future, this could be expanded with a list of available upgrades
+	var common_upgrades = ["roster_size", "quest_slots", "storage_capacity", "recruitment_quality"]
+	for upgrade_type in common_upgrades:
+		upgrade_costs[upgrade_type] = _balance_config.get_guild_upgrade_cost(upgrade_type)
+	return upgrade_costs
+
+## Get available upgrades
+func get_available_upgrades() -> Array[Dictionary]:
+	if not _validate_dependencies():
+		return []
+	
+	var upgrades: Array[Dictionary] = []
+	# For now, return common upgrades
+	# In the future, this could be expanded with a list of available upgrades
+	var common_upgrades = ["roster_size", "quest_slots", "storage_capacity", "recruitment_quality"]
+	for upgrade_type in common_upgrades:
+		var upgrade_info: Dictionary = {
+			"name": upgrade_type,
+			"description": "Upgrade " + upgrade_type.replace("_", " ").capitalize(),
+			"cost": _balance_config.get_guild_upgrade_cost(upgrade_type)
+		}
+		upgrades.append(upgrade_info)
+	return upgrades
+
+## Check if upgrading is possible
+func can_upgrade() -> bool:
+	return _validate_dependencies() and _guild != null
+
+## Get the last error message
+func get_last_error() -> String:
+	return _last_error if "_last_error" in self else ""

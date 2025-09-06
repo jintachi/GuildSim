@@ -146,7 +146,16 @@ func load() -> bool:
 			_update_index()
 			_on_repository_loaded()
 			return true
-	return false
+	
+	# If no saved data, initialize with default data
+	_initialize_default_data()
+	return true
+
+## Initialize default data (override in subclasses)
+func _initialize_default_data() -> void:
+	# Default implementation does nothing
+	# Subclasses should override this to provide default data
+	pass
 
 ## Get repository name for save/load
 func get_repository_name() -> String:
@@ -154,13 +163,13 @@ func get_repository_name() -> String:
 	return ""
 
 ## Event handlers (override in subclasses)
-func _on_entity_added(entity: Variant) -> void:
+func _on_entity_added(_entity: Variant) -> void:
 	pass
 
-func _on_entity_updated(entity: Variant) -> void:
+func _on_entity_updated(_entity: Variant) -> void:
 	pass
 
-func _on_entity_removed(entity: Variant) -> void:
+func _on_entity_removed(_entity: Variant) -> void:
 	pass
 
 func _on_repository_cleared() -> void:

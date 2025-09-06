@@ -1,0 +1,134 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqx8k2m3n4p5q_map"]
+
+[ext_resource type="Script" path="res://ui/components/MapUI.gd" id="1_map"]
+
+[node name="MapUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_map")
+
+[node name="MapPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MapTitle" type="Label" parent="MapPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -200.0
+offset_right = 50.0
+offset_bottom = -150.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Guild Map"
+horizontal_alignment = 1
+
+[node name="RoomButtons" type="Control" parent="MapPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TrainingRoom" type="Button" parent="MapPanel/RoomButtons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = -100.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Training Room"
+
+[node name="Workshop" type="Button" parent="MapPanel/RoomButtons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -100.0
+offset_right = 50.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Workshop"
+
+[node name="Armory" type="Button" parent="MapPanel/RoomButtons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 100.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Armory"
+
+[node name="Library" type="Button" parent="MapPanel/RoomButtons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = 0.0
+offset_right = -100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Library"
+
+[node name="GuildHall" type="Button" parent="MapPanel/RoomButtons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = 0.0
+offset_right = 50.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Guild Hall"
+
+[node name="HealersGuild" type="Button" parent="MapPanel/RoomButtons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 100.0
+offset_top = 0.0
+offset_right = 200.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Healers Guild"

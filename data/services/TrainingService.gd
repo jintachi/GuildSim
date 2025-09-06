@@ -180,7 +180,7 @@ func _get_rank_improvement_bonus(rank: Character.Rank) -> float:
 
 ## Train character in multiple stats
 func train_character_multiple_stats(character: Character, stat_names: Array[String]) -> Dictionary:
-	var results = {}
+	var results: Dictionary = {}
 	
 	for stat_name in stat_names:
 		results[stat_name] = train_character_stat(character, stat_name)

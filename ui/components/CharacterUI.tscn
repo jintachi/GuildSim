@@ -1,0 +1,193 @@
+[gd_scene load_steps=2 format=3 uid="uid://bybmn8q8hjp7u"]
+
+[ext_resource type="Script" uid="uid://cjl0wa4vdjmyl" path="res://ui/components/CharacterUI.gd" id="1_0x8y9"]
+
+[node name="CharacterUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_0x8y9")
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HeaderPanel" type="PanelContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="HeaderContent" type="HBoxContainer" parent="MainContainer/HeaderPanel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/HeaderPanel/HeaderContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "Character Management"
+
+[node name="StatsLabel" type="Label" parent="MainContainer/HeaderPanel/HeaderContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Total Characters: 0 | Average Level: 0"
+
+[node name="ContentContainer" type="HSplitContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftPanel" type="VBoxContainer" parent="MainContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CharacterListPanel" type="PanelContainer" parent="MainContainer/ContentContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CharacterListContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/CharacterListPanel"]
+layout_mode = 2
+
+[node name="CharacterListLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/CharacterListPanel/CharacterListContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Character Roster"
+
+[node name="CharacterList" type="ItemList" parent="MainContainer/ContentContainer/LeftPanel/CharacterListPanel/CharacterListContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+select_mode = 1
+
+[node name="RecruitmentPanel" type="PanelContainer" parent="MainContainer/ContentContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="RecruitmentContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel"]
+layout_mode = 2
+
+[node name="RecruitmentLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Recruit New Character"
+
+[node name="RecruitmentForm" type="VBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer"]
+layout_mode = 2
+
+[node name="ClassSelectionContainer" type="HBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer/RecruitmentForm"]
+layout_mode = 2
+
+[node name="ClassLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer/RecruitmentForm/ClassSelectionContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Class:"
+
+[node name="ClassSelection" type="OptionButton" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer/RecruitmentForm/ClassSelectionContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QualitySelectionContainer" type="HBoxContainer" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer/RecruitmentForm"]
+layout_mode = 2
+
+[node name="QualityLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer/RecruitmentForm/QualitySelectionContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Quality:"
+
+[node name="QualitySelection" type="OptionButton" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer/RecruitmentForm/QualitySelectionContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RecruitmentCostLabel" type="Label" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer/RecruitmentForm"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "Cost: 100 Gold, 10 Influence"
+
+[node name="RecruitButton" type="Button" parent="MainContainer/ContentContainer/LeftPanel/RecruitmentPanel/RecruitmentContainer/RecruitmentForm"]
+layout_mode = 2
+text = "Recruit Character"
+
+[node name="RightPanel" type="VBoxContainer" parent="MainContainer/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CharacterDetailsPanel" type="PanelContainer" parent="MainContainer/ContentContainer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CharacterDetailsContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/CharacterDetailsPanel"]
+layout_mode = 2
+
+[node name="CharacterDetailsLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/CharacterDetailsPanel/CharacterDetailsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Character Details"
+
+[node name="CharacterDetails" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/CharacterDetailsPanel/CharacterDetailsContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CharacterNameLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/CharacterDetailsPanel/CharacterDetailsContainer/CharacterDetails"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "Select a character to view details"
+
+[node name="CharacterClassLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/CharacterDetailsPanel/CharacterDetailsContainer/CharacterDetails"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Class: N/A"
+
+[node name="CharacterLevelLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/CharacterDetailsPanel/CharacterDetailsContainer/CharacterDetails"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Level: N/A"
+
+[node name="CharacterStatsContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/CharacterDetailsPanel/CharacterDetailsContainer/CharacterDetails"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatsLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/CharacterDetailsPanel/CharacterDetailsContainer/CharacterDetails/CharacterStatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Stats:"
+
+[node name="TrainingPanel" type="PanelContainer" parent="MainContainer/ContentContainer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="TrainingContainer" type="VBoxContainer" parent="MainContainer/ContentContainer/RightPanel/TrainingPanel"]
+layout_mode = 2
+
+[node name="TrainingLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/TrainingPanel/TrainingContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Training Options"
+
+[node name="TrainingOptionsList" type="ItemList" parent="MainContainer/ContentContainer/RightPanel/TrainingPanel/TrainingContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+select_mode = 1
+
+[node name="TrainingCostLabel" type="Label" parent="MainContainer/ContentContainer/RightPanel/TrainingPanel/TrainingContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "Cost: N/A"
+
+[node name="TrainButton" type="Button" parent="MainContainer/ContentContainer/RightPanel/TrainingPanel/TrainingContainer"]
+layout_mode = 2
+disabled = true
+text = "Train Character"

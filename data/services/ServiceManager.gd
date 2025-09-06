@@ -4,7 +4,9 @@ extends Node
 ## Handles service initialization, dependency injection, and service coordination
 
 signal services_initialized
+@warning_ignore_start("unused_signal")
 signal service_error(service_name: String, error: String)
+@warning_ignore_restore("unused_signal")
 
 # Core services
 var _character_service: CharacterService
@@ -234,7 +236,8 @@ func save_all_data() -> bool:
 	
 	if _guild_repository:
 		success = success and _guild_repository.save()
-	
+
+
 	if success:
 		log_info("All service data saved successfully")
 	else:

@@ -11,18 +11,18 @@ class ResourceChangedEvent extends BaseEvent:
 	var change_amount: int
 	var reason: String
 	
-	func _init(resource_type: String, old_amount: int, new_amount: int, reason: String, source: String = "GuildService"):
-		self.resource_type = resource_type
-		self.old_amount = old_amount
-		self.new_amount = new_amount
-		self.change_amount = new_amount - old_amount
-		self.reason = reason
-		super._init("resource_changed", source, {
-			"resource_type": resource_type,
-			"old_amount": old_amount,
-			"new_amount": new_amount,
-			"change_amount": self.change_amount,
-			"reason": reason
+	func _init(p_resource_type: String, p_old_amount: int, p_new_amount: int, p_reason: String, p_source: String = "GuildService"):
+		resource_type = p_resource_type
+		old_amount = p_old_amount
+		new_amount = p_new_amount
+		change_amount = p_new_amount - p_old_amount
+		reason = p_reason
+		super._init("resource_changed", p_source, {
+			"resource_type": p_resource_type,
+			"old_amount": p_old_amount,
+			"new_amount": p_new_amount,
+			"change_amount": change_amount,
+			"reason": p_reason
 		})
 
 class InsufficientResourcesEvent extends BaseEvent:
@@ -30,21 +30,21 @@ class InsufficientResourcesEvent extends BaseEvent:
 	var available_resources: Dictionary
 	var missing_resources: Dictionary
 	
-	func _init(required: Dictionary, available: Dictionary, source: String = "GuildService"):
-		self.required_resources = required
-		self.available_resources = available
-		self.missing_resources = {}
+	func _init(p_required: Dictionary, p_available: Dictionary, p_source: String = "GuildService"):
+		required_resources = p_required
+		available_resources = p_available
+		missing_resources = {}
 		
-		for resource in required:
-			var available_amount = available.get(resource, 0)
-			var required_amount = required[resource]
+		for resource in p_required:
+			var available_amount = p_available.get(resource, 0)
+			var required_amount = p_required[resource]
 			if available_amount < required_amount:
-				self.missing_resources[resource] = required_amount - available_amount
+				missing_resources[resource] = required_amount - available_amount
 		
-		super._init("insufficient_resources", source, {
-			"required_resources": required,
-			"available_resources": available,
-			"missing_resources": self.missing_resources
+		super._init("insufficient_resources", p_source, {
+			"required_resources": p_required,
+			"available_resources": p_available,
+			"missing_resources": missing_resources
 		})
 #endregion
 
@@ -55,16 +55,16 @@ class GuildLevelUpEvent extends BaseEvent:
 	var reputation_gained: int
 	var new_unlocks: Array[String]
 	
-	func _init(old_level: int, new_level: int, reputation_gained: int, unlocks: Array[String], source: String = "GuildService"):
-		self.old_level = old_level
-		self.new_level = new_level
-		self.reputation_gained = reputation_gained
-		self.new_unlocks = unlocks
-		super._init("guild_level_up", source, {
-			"old_level": old_level,
-			"new_level": new_level,
-			"reputation_gained": reputation_gained,
-			"new_unlocks": unlocks
+	func _init(p_old_level: int, p_new_level: int, p_reputation_gained: int, p_unlocks: Array[String], p_source: String = "GuildService"):
+		old_level = p_old_level
+		new_level = p_new_level
+		reputation_gained = p_reputation_gained
+		new_unlocks = p_unlocks
+		super._init("guild_level_up", p_source, {
+			"old_level": p_old_level,
+			"new_level": p_new_level,
+			"reputation_gained": p_reputation_gained,
+			"new_unlocks": p_unlocks
 		})
 
 class RoomUnlockedEvent extends BaseEvent:
@@ -72,14 +72,14 @@ class RoomUnlockedEvent extends BaseEvent:
 	var unlock_cost: Dictionary
 	var unlock_requirements: Dictionary
 	
-	func _init(room_name: String, cost: Dictionary, requirements: Dictionary, source: String = "GuildService"):
-		self.room_name = room_name
-		self.unlock_cost = cost
-		self.unlock_requirements = requirements
-		super._init("room_unlocked", source, {
-			"room_name": room_name,
-			"unlock_cost": cost,
-			"unlock_requirements": requirements
+	func _init(p_room_name: String, p_cost: Dictionary, p_requirements: Dictionary, p_source: String = "GuildService"):
+		room_name = p_room_name
+		unlock_cost = p_cost
+		unlock_requirements = p_requirements
+		super._init("room_unlocked", p_source, {
+			"room_name": p_room_name,
+			"unlock_cost": p_cost,
+			"unlock_requirements": p_requirements
 		})
 
 class FeatureUnlockedEvent extends BaseEvent:
@@ -87,14 +87,14 @@ class FeatureUnlockedEvent extends BaseEvent:
 	var unlock_cost: Dictionary
 	var unlock_requirements: Dictionary
 	
-	func _init(feature_name: String, cost: Dictionary, requirements: Dictionary, source: String = "GuildService"):
-		self.feature_name = feature_name
-		self.unlock_cost = cost
-		self.unlock_requirements = requirements
-		super._init("feature_unlocked", source, {
-			"feature_name": feature_name,
-			"unlock_cost": cost,
-			"unlock_requirements": requirements
+	func _init(p_feature_name: String, p_cost: Dictionary, p_requirements: Dictionary, p_source: String = "GuildService"):
+		feature_name = p_feature_name
+		unlock_cost = p_cost
+		unlock_requirements = p_requirements
+		super._init("feature_unlocked", p_source, {
+			"feature_name": p_feature_name,
+			"unlock_cost": p_cost,
+			"unlock_requirements": p_requirements
 		})
 
 class GuildUpgradePurchasedEvent extends BaseEvent:
@@ -103,16 +103,16 @@ class GuildUpgradePurchasedEvent extends BaseEvent:
 	var upgrade_cost: Dictionary
 	var upgrade_benefits: Dictionary
 	
-	func _init(upgrade_type: String, level: int, cost: Dictionary, benefits: Dictionary, source: String = "GuildService"):
-		self.upgrade_type = upgrade_type
-		self.upgrade_level = level
-		self.upgrade_cost = cost
-		self.upgrade_benefits = benefits
-		super._init("guild_upgrade_purchased", source, {
-			"upgrade_type": upgrade_type,
-			"upgrade_level": level,
-			"upgrade_cost": cost,
-			"upgrade_benefits": benefits
+	func _init(p_upgrade_type: String, p_level: int, p_cost: Dictionary, p_benefits: Dictionary, p_source: String = "GuildService"):
+		upgrade_type = p_upgrade_type
+		upgrade_level = p_level
+		upgrade_cost = p_cost
+		upgrade_benefits = p_benefits
+		super._init("guild_upgrade_purchased", p_source, {
+			"upgrade_type": p_upgrade_type,
+			"upgrade_level": p_level,
+			"upgrade_cost": p_cost,
+			"upgrade_benefits": p_benefits
 		})
 #endregion
 
@@ -120,37 +120,37 @@ class GuildUpgradePurchasedEvent extends BaseEvent:
 class GuildCreatedEvent extends BaseEvent:
 	var guild: Guild
 	
-	func _init(guild: Guild, source: String = "GuildService"):
-		self.guild = guild
-		super._init("guild_created", source, {
-			"guild_id": guild.id,
-			"guild_name": guild.guild_name
+	func _init(p_guild: Guild, p_source: String = "GuildService"):
+		guild = p_guild
+		super._init("guild_created", p_source, {
+			"guild_id": p_guild.id,
+			"guild_name": p_guild.guild_name
 		})
 
 class GuildSavedEvent extends BaseEvent:
 	var guild: Guild
 	var save_duration: float
 	
-	func _init(guild: Guild, save_duration: float, source: String = "SaveService"):
-		self.guild = guild
-		self.save_duration = save_duration
-		super._init("guild_saved", source, {
-			"guild_id": guild.id,
-			"guild_name": guild.guild_name,
-			"save_duration": save_duration
+	func _init(p_guild: Guild, p_save_duration: float, p_source: String = "SaveService"):
+		guild = p_guild
+		save_duration = p_save_duration
+		super._init("guild_saved", p_source, {
+			"guild_id": p_guild.id,
+			"guild_name": p_guild.guild_name,
+			"save_duration": p_save_duration
 		})
 
 class GuildLoadedEvent extends BaseEvent:
 	var guild: Guild
 	var load_duration: float
 	
-	func _init(guild: Guild, load_duration: float, source: String = "SaveService"):
-		self.guild = guild
-		self.load_duration = load_duration
-		super._init("guild_loaded", source, {
-			"guild_id": guild.id,
-			"guild_name": guild.guild_name,
-			"load_duration": load_duration
+	func _init(p_guild: Guild, p_load_duration: float, p_source: String = "SaveService"):
+		guild = p_guild
+		load_duration = p_load_duration
+		super._init("guild_loaded", p_source, {
+			"guild_id": p_guild.id,
+			"guild_name": p_guild.guild_name,
+			"load_duration": p_load_duration
 		})
 
 class GuildSettingsChangedEvent extends BaseEvent:
@@ -158,14 +158,14 @@ class GuildSettingsChangedEvent extends BaseEvent:
 	var old_value: Variant
 	var new_value: Variant
 	
-	func _init(setting_name: String, old_value: Variant, new_value: Variant, source: String = "SettingsService"):
-		self.setting_name = setting_name
-		self.old_value = old_value
-		self.new_value = new_value
-		super._init("guild_settings_changed", source, {
-			"setting_name": setting_name,
-			"old_value": old_value,
-			"new_value": new_value
+	func _init(p_setting_name: String, p_old_value: Variant, p_new_value: Variant, p_source: String = "SettingsService"):
+		setting_name = p_setting_name
+		old_value = p_old_value
+		new_value = p_new_value
+		super._init("guild_settings_changed", p_source, {
+			"setting_name": p_setting_name,
+			"old_value": p_old_value,
+			"new_value": p_new_value
 		})
 #endregion
 
@@ -176,16 +176,16 @@ class GuildStatisticUpdatedEvent extends BaseEvent:
 	var new_value: int
 	var change_amount: int
 	
-	func _init(statistic_name: String, old_value: int, new_value: int, source: String = "GuildService"):
-		self.statistic_name = statistic_name
-		self.old_value = old_value
-		self.new_value = new_value
-		self.change_amount = new_value - old_value
-		super._init("guild_statistic_updated", source, {
-			"statistic_name": statistic_name,
-			"old_value": old_value,
-			"new_value": new_value,
-			"change_amount": self.change_amount
+	func _init(p_statistic_name: String, p_old_value: int, p_new_value: int, p_source: String = "GuildService"):
+		statistic_name = p_statistic_name
+		old_value = p_old_value
+		new_value = p_new_value
+		change_amount = p_new_value - p_old_value
+		super._init("guild_statistic_updated", p_source, {
+			"statistic_name": p_statistic_name,
+			"old_value": p_old_value,
+			"new_value": p_new_value,
+			"change_amount": change_amount
 		})
 
 class GuildMilestoneReachedEvent extends BaseEvent:
@@ -193,13 +193,13 @@ class GuildMilestoneReachedEvent extends BaseEvent:
 	var milestone_value: int
 	var milestone_reward: Dictionary
 	
-	func _init(milestone_name: String, value: int, reward: Dictionary, source: String = "GuildService"):
-		self.milestone_name = milestone_name
-		self.milestone_value = value
-		self.milestone_reward = reward
-		super._init("guild_milestone_reached", source, {
-			"milestone_name": milestone_name,
-			"milestone_value": value,
-			"milestone_reward": reward
+	func _init(p_milestone_name: String, p_value: int, p_reward: Dictionary, p_source: String = "GuildService"):
+		milestone_name = p_milestone_name
+		milestone_value = p_value
+		milestone_reward = p_reward
+		super._init("guild_milestone_reached", p_source, {
+			"milestone_name": p_milestone_name,
+			"milestone_value": p_value,
+			"milestone_reward": p_reward
 		})
 #endregion

@@ -7,13 +7,24 @@ extends Resource
 #region Enums
 enum QuestType {
 	GATHERING,
-	HUNTING_TRAPPING,
+	HUNTING,
+	TRAPPING,
 	DIPLOMACY,
 	CARAVAN_GUARDING,
-	ESCORTING,
+	DEFENSE,
 	STEALTH,
-	ODD_JOBS,
-	EMERGENCY
+	ODD_JOB,
+	EMERGENCY,
+	EXPLORATION,
+	ESCORT,
+	ASSASSINATION,
+	RECONNAISSANCE,
+	INVESTIGATION,
+	RESCUE,
+	DELIVERY,
+	UNIQUE_MONSTER_HUNT,
+	RAID,
+	APEX_PREDATOR_HUNT
 }
 
 enum QuestStatus {
@@ -62,6 +73,7 @@ enum QuestDifficulty {
 @export var required_healer: bool = false
 @export var required_support: bool = false
 @export var required_attacker: bool = false
+@export var required_jobs: Array[String] = []
 #endregion
 
 #region Stat Requirements
@@ -227,6 +239,7 @@ func get_data(property_name: String) -> Variant:
 		"required_healer": return required_healer
 		"required_support": return required_support
 		"required_attacker": return required_attacker
+		"required_jobs": return required_jobs
 		"min_total_health": return min_total_health
 		"min_total_defense": return min_total_defense
 		"min_total_attack": return min_total_attack
@@ -275,6 +288,7 @@ func set_data(property_name: String, value: Variant) -> void:
 		"required_healer": required_healer = value
 		"required_support": required_support = value
 		"required_attacker": required_attacker = value
+		"required_jobs": required_jobs = value
 		"min_total_health": min_total_health = value
 		"min_total_defense": min_total_defense = value
 		"min_total_attack": min_total_attack = value

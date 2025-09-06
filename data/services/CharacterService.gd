@@ -14,6 +14,9 @@ var _characters_promoted: int = 0
 var _total_recruitment_cost: int = 0
 var _total_training_cost: int = 0
 
+# Error handling
+var _last_error: String = ""
+
 func _init():
 	super._init("CharacterService")
 
@@ -25,11 +28,13 @@ func initialize_with_repository(character_repository: CharacterRepository, guild
 ## Recruit a new character
 func recruit_character(character_data: Dictionary) -> Character:
 	if not _validate_dependencies():
+		_last_error = "Character service dependencies not available"
 		return null
 	
 	# Create character from data
 	var character = _create_character_from_data(character_data)
 	if not character:
+		_last_error = "Failed to create character from data"
 		return null
 	
 	# Calculate recruitment cost
@@ -37,6 +42,7 @@ func recruit_character(character_data: Dictionary) -> Character:
 	
 	# Check if guild can afford recruitment
 	if _guild_service and not _guild_service.can_afford_cost({"gold": recruitment_cost}):
+		_last_error = "Insufficient resources for recruitment"
 		emit_simple_event("insufficient_resources", {
 			"required": {"gold": recruitment_cost},
 			"operation": "character_recruitment"
@@ -53,12 +59,17 @@ func recruit_character(character_data: Dictionary) -> Character:
 		_characters_recruited += 1
 		_total_recruitment_cost += recruitment_cost
 		
+		# Clear error on success
+		_last_error = ""
+		
 		# Emit recruitment event
 		var event = CharacterEvents.CharacterRecruitedEvent.new(character, recruitment_cost)
 		emit_event(event)
 		
 		log_activity("Recruited character: " + character.character_name + " for " + str(recruitment_cost) + " gold")
 		return character
+	else:
+		_last_error = "Failed to add character to repository"
 	
 	return null
 
@@ -99,8 +110,13 @@ func _create_character_from_data(data: Dictionary) -> Character:
 
 ## Apply quality-based bonuses to character
 func _apply_quality_bonuses(character: Character) -> void:
+	
+	var quality_keys = Character.Quality.keys()
+	if character.quality < 0 or character.quality >= quality_keys.size():
+		return  # Invalid quality value
+	
 	var bonus = _balance_config.character_recruitment_quality_bonuses.get(
-		Character.Quality.keys()[character.quality], 0
+		quality_keys[character.quality], 0
 	)
 	
 	# Apply bonus to all stats
@@ -114,7 +130,15 @@ func _apply_quality_bonuses(character: Character) -> void:
 ## Calculate recruitment cost for character
 func _calculate_recruitment_cost(character: Character) -> int:
 	var base_cost = _balance_config.get_recruitment_cost(character.quality)
-	var rank_multiplier = 1.0 + (Character.Rank.keys().find(Character.Rank.keys()[character.rank]) * 0.1)
+	
+	var rank_keys = Character.Rank.keys()
+	var rank_multiplier = 1.0
+	if character.rank >= 0 and character.rank < rank_keys.size():
+		var rank_name = rank_keys[character.rank]
+		var rank_index = rank_keys.find(rank_name)
+		if rank_index >= 0:
+			rank_multiplier = 1.0 + (rank_index * 0.1)
+	
 	var level_multiplier = 1.0 + (character.level - 1) * 0.05
 	
 	return int(base_cost * rank_multiplier * level_multiplier)
@@ -190,8 +214,8 @@ func add_experience(character: Character, experience_amount: int) -> bool:
 	if not _validate_dependencies():
 		return false
 	
-	var old_level = character.level
-	var old_experience = character.experience
+	var _old_level = character.level
+	var _old_experience = character.experience
 	
 	# Add experience
 	character.experience += experience_amount
@@ -244,7 +268,11 @@ func _check_and_process_level_up(character: Character) -> bool:
 
 ## Apply stat gains on level up
 func _apply_level_up_stat_gains(character: Character) -> void:
-	var char_class_name = Character.CharacterClass.keys()[character.character_class]
+	var class_keys = Character.CharacterClass.keys()
+	if character.character_class < 0 or character.character_class >= class_keys.size():
+		return  # Invalid character class
+	
+	var char_class_name = class_keys[character.character_class]
 	var stat_gains = _balance_config.level_up_stat_gains.get(char_class_name, {})
 	
 	for stat in stat_gains:
@@ -254,7 +282,7 @@ func _apply_level_up_stat_gains(character: Character) -> void:
 
 ## Check and process promotion
 func _check_and_process_promotion(character: Character) -> bool:
-	var current_rank_exp = _get_rank_experience_requirement(character.rank)
+	var _current_rank_exp = _get_rank_experience_requirement(character.rank)
 	var next_rank = _get_next_rank(character.rank)
 	var next_rank_exp = _get_rank_experience_requirement(next_rank)
 	
@@ -283,7 +311,7 @@ func _get_rank_experience_requirement(rank: Character.Rank) -> int:
 func _get_next_rank(current_rank: Character.Rank) -> Character.Rank:
 	var ranks = Character.Rank.values()
 	var current_index = ranks.find(current_rank)
-	if current_index < ranks.size() - 1:
+	if current_index >= 0 and current_index < ranks.size() - 1:
 		return ranks[current_index + 1]
 	return current_rank
 
@@ -320,7 +348,11 @@ func heal_character(character: Character, healing_cost: Dictionary = {}) -> bool
 	var event = CharacterEvents.CharacterHealedEvent.new(character, injury_type)
 	emit_event(event)
 	
-	log_activity("Healed " + character.character_name + " from " + Character.InjuryType.keys()[injury_type])
+	var injury_keys = Character.InjuryType.keys()
+	var injury_name = "Unknown"
+	if injury_type >= 0 and injury_type < injury_keys.size():
+		injury_name = injury_keys[injury_type]
+	log_activity("Healed " + character.character_name + " from " + injury_name)
 	return true
 
 ## Get character statistics
@@ -343,3 +375,55 @@ func get_statistics() -> Dictionary:
 	var char_stats = get_character_statistics()
 	base_stats.merge(char_stats)
 	return base_stats
+
+## Get recruitment costs for different character types
+func get_recruitment_costs() -> Dictionary:
+	var costs: Dictionary = {}
+	
+	# Define base recruitment costs for different character classes
+	var base_costs = {
+		"warrior": {"gold": 100, "influence": 10},
+		"mage": {"gold": 120, "influence": 15},
+		"rogue": {"gold": 90, "influence": 8},
+		"cleric": {"gold": 110, "influence": 12},
+		"archer": {"gold": 95, "influence": 9}
+	}
+	
+	# Define quality multipliers
+	var quality_multipliers = {
+		"common": 1.0,
+		"uncommon": 1.5,
+		"rare": 2.0,
+		"epic": 3.0,
+		"legendary": 5.0
+	}
+	
+	# Calculate costs for each class and quality combination
+	for char_class_name in base_costs:
+		costs[char_class_name] = {}
+		for quality in quality_multipliers:
+			var base_cost = base_costs[char_class_name]
+			var multiplier = quality_multipliers[quality]
+			costs[char_class_name][quality] = {
+				"gold": int(base_cost.gold * multiplier),
+				"influence": int(base_cost.influence * multiplier)
+			}
+	
+	return costs
+
+## Check if character can be recruited
+func can_recruit_character() -> bool:
+	if not _validate_dependencies():
+		return false
+	
+	# Check if guild service is available and has resources
+	if _guild_service:
+		# Get minimum recruitment cost (common warrior)
+		var min_cost = {"gold": 100, "influence": 10}
+		return _guild_service.can_afford_cost(min_cost)
+	
+	return false
+
+## Get last error message
+func get_last_error() -> String:
+	return _last_error if "_last_error" in self else ""

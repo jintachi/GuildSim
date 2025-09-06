@@ -12,6 +12,36 @@ enum CharacterClass {
 	ATTACKER
 }
 
+enum CharacterJob {
+	HERO,
+	MAGE,
+	ROGUE,
+	WARRIOR,
+	ARCHER,
+	KNIGHT,
+	PRIEST,
+	DRUID,
+	SHAMAN,
+	WARLOCK,
+	MONK,
+	BARBARIAN,
+	ASSASSIN,
+	ALCHEMIST,
+	ARTISAN,
+	BLACKSMITH,
+	BARD,
+	BEAST_TAMER,
+	BERSERKER,
+	CRUSADER,
+	DOMINATOR,
+	ELEMENTALIST,
+	ENCHANTER,
+	EXPLORER,
+	FIREBRAND,
+	FORGEMASTER,
+	GREEN_THUMB
+}
+
 enum Quality {
 	ONE_STAR = 1,
 	TWO_STAR = 2,
@@ -43,6 +73,7 @@ enum CharacterStatus {
 @export var id: String
 @export var character_name: String
 @export var character_class: CharacterClass
+@export var character_job: CharacterJob
 @export var quality: Quality = Quality.ONE_STAR
 @export var rank: Rank = Rank.F
 @export var level: int = 1

@@ -63,7 +63,8 @@ func create_item(item_data: Dictionary) -> GameResource:
 	
 	# Set metadata
 	item.source = item_data.get("source", "EquipmentService")
-	item.tags.append(item_data.get("tags"))
+	for tag in item_data.get("tags", []):
+		item.tags.append(tag)
 	
 	# Validate item
 	if not item.validate():
@@ -71,7 +72,7 @@ func create_item(item_data: Dictionary) -> GameResource:
 		return null
 	
 	_items_created += 1
-	log_activity("Created item: " + item.name + " (" + GameResource.Rarity.keys()[item.rarity] + ")")
+	log_activity("Created item: " + item.name + " (" + GameResource.Rarity.keys()[item.rarity - 1] + ")")
 	return item
 
 ## Create equipment item
@@ -90,17 +91,17 @@ func create_equipment(equipment_data: Dictionary) -> GameResource:
 			GameResource.Rarity.keys()[item_data.get("rarity", GameResource.Rarity.COMMON)], 100
 		)
 	if not item_data.has("tags") :
-		item_data.set_data("tags",[""])
+		item_data["tags"] = []
 		
 	return create_item(item_data)
 
 ## Generate equipment stat bonuses based on rarity
 func _generate_equipment_stat_bonuses(rarity: GameResource.Rarity) -> Dictionary:
 	var rarity_config = _balance_config.equipment_stat_bonuses.get(
-		GameResource.Rarity.keys()[rarity], {"multiplier": 1.0, "base_bonus": 5}
+		GameResource.Rarity.keys()[rarity - 1], {"multiplier": 1.0, "base_bonus": 5}
 	)
 	
-	var bonuses = {}
+	var bonuses: Dictionary = {}
 	var stats = ["health", "defense", "attack", "speed", "intelligence", "charisma"]
 	
 	# Randomly select 2-3 stats to boost
@@ -319,7 +320,7 @@ func calculate_equipment_bonuses(character: Character) -> Dictionary:
 
 ## Get simulated equipment bonuses (placeholder)
 func _get_simulated_equipment_bonuses(equipment_slot: String) -> Dictionary:
-	var bonuses = {}
+	var bonuses: Dictionary = {}
 	
 	match equipment_slot:
 		"equipped_weapon":

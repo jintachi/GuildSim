@@ -11,6 +11,35 @@ func _init(save_system: SaveSystem = null, event_bus: EventBus = null):
 func get_repository_name() -> String:
 	return "guild"
 
+## Initialize default data
+func _initialize_default_data() -> void:
+	# Create a default guild
+	var default_guild = _create_default_guild()
+	if default_guild.validate():
+		add(default_guild)
+
+## Create a default guild
+func _create_default_guild() -> Guild:
+	var guild = Guild.new()
+	guild.guild_name = "New Guild"
+	guild.gold = 1000
+	guild.influence = 100
+	guild.level = 1
+	guild.max_roster_size = 10
+	
+	# Set some basic unlocked features
+	guild.unlocked_features = {
+		"training_room": true,
+		"workshop": true,
+		"armory": false,
+		"library": false,
+		"healers_guild": false,
+		"merchants_guild": false,
+		"blacksmiths_guild": false
+	}
+	
+	return guild
+
 ## Get the current guild (there should only be one)
 func get_current_guild() -> Guild:
 	if _data.size() > 0:

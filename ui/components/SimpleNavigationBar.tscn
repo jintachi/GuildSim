@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqx8k2m3n4p5q_navbar"]
+
+[ext_resource type="Script" path="res://ui/components/SimpleNavigationBar.gd" id="1_navbar"]
+
+[node name="SimpleNavigationBar" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_navbar")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -200.0
+offset_right = 110.0
+offset_bottom = -10.0
+grow_vertical = 0
+
+[node name="CharactersBtn" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Characters"
+
+[node name="QuestsBtn" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Quests"
+
+[node name="GuildBtn" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Guild"
+
+[node name="MapBtn" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Map"
+
+[node name="SettingsBtn" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Settings"
